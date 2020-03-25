@@ -1,0 +1,23 @@
+version: "2"
+services:
+  flask:
+    image: taboo:latest
+    ports:
+      - "5000:5000"
+    networks:
+      - app
+    environment:
+      - FLASK_APP=src/app.py
+    command:
+      flask run --port 5000 --host 0.0.0.0
+  postgres:
+    image: postgres:12.2
+    networks:
+      - app
+    ports:
+      - "5400:5432"
+    environment:
+      - POSTGRES_PASSWORD=postgres
+networks:
+  app:
+    driver: bridge
