@@ -1,0 +1,10 @@
+black
+ipdb
+ipython
+flake8
+flask
+flask-socketio
+flask-sqlalchemy
+pytest
+psycopg2
+sqlalchemy
