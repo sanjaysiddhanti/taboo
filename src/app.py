@@ -1,3 +1,6 @@
+import random
+import string
+
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
@@ -11,6 +14,12 @@ db = SQLAlchemy(app)
 def hello_world():
     return "Hello, World!"
 
+@app.route("/game")
+def game():
+    new_game = Game(room_id=generate_room_id())
+    db.session.add(new_game)
+    db.session.commit()
+    return {"game_id": new_game.id}
 
 class Player(db.Model):
     id = db.Column(db.Integer, primary_key=True)
