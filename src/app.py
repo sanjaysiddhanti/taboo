@@ -2,11 +2,14 @@ import random
 import string
 
 from flask import Flask
+from flask_socketio import SocketIO
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 
 app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://postgres:postgres@postgres:5432"
+socketio = SocketIO(app)
+
 db = SQLAlchemy(app)
 
 
@@ -45,3 +48,6 @@ def generate_room_id():
         # Make sure another game doesn't have this room ID
         if not Game.query.filter(Game.room_id == room_id).first():
             return room_id
+
+if __name__ == '__main__':
+    socketio.run(app, host="0.0.0.0", port=5000)

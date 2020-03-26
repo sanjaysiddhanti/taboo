@@ -9,7 +9,7 @@ services:
     environment:
       - FLASK_APP=src/app.py
     command:
-      flask run --port 5000 --host 0.0.0.0
+      python src/app.py
   postgres:
     image: postgres:12.2
     networks:
