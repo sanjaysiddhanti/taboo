@@ -2,7 +2,7 @@ import random
 import string
 
 from flask import Flask
-from flask_socketio import SocketIO
+from flask_socketio import SocketIO, emit, send, join_room, leave_room
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
@@ -13,16 +13,36 @@ socketio = SocketIO(app)
 db = SQLAlchemy(app)
 
 
-@app.route("/")
-def hello_world():
-    return "Hello, World!"
+@socketio.on('connect')
+def test_connect():
+    emit('connected', {'data': 'Connected'})
 
-@app.route("/game")
-def game():
+@socketio.on('hello world')
+def hello_world():
+    print("Hello World!")
+    emit('hello world', {'msg': 'hello, world'})
+
+@socketio.on('create game')
+def create_game(data):
+    print("In create game endpt")
     new_game = Game(room_id=generate_room_id())
     db.session.add(new_game)
     db.session.commit()
-    return {"game_id": new_game.id}
+    emit('game created', {'id': new_game.id})
+    join_game({'username': data['username'], 'room': new_game.room_id})
+
+@socketio.on('join game')
+def join_game(data):
+    username = data['username']
+    room = data['room']
+    assert Game.query.filter(Game.room_id==room).count() == 1, 'Game does not exist'
+    game = Game.query.filter(Game.room_id==room).first()
+    assert Player.query.filter(Player.game==game, Player.name==username) == 0, f'Player {username} is already in room {room}'
+    join_room(room)
+    player = Player(name=username, game=game)
+    db.session.add(player)
+    db.session.commit()
+    send(f'{username} has entered the room.', room=room)
 
 class Player(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -46,7 +66,7 @@ def generate_room_id():
     while True:
         room_id = "".join(random.choice(string.ascii_uppercase) for k in range(4))
         # Make sure another game doesn't have this room ID
-        if not Game.query.filter(Game.room_id == room_id).first():
+        if not Game.query.filter(room_id==room_id).first():
             return room_id
 
 if __name__ == '__main__':
