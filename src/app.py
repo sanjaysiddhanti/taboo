@@ -1,3 +1,4 @@
+import logging
 import random
 import string
 
@@ -6,6 +7,7 @@ from flask_socketio import SocketIO, emit, send, join_room, leave_room
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
+app.logger.setLevel(logging.INFO)
 
 app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://postgres:postgres@postgres:5432"
 socketio = SocketIO(app)
@@ -19,7 +21,7 @@ def test_connect():
 
 @socketio.on('hello world')
 def hello_world():
-    print("Hello World!")
+    app.logger.info("Hello World!")
     emit('hello world', {'msg': 'hello, world'})
 
 @socketio.on('create game')
@@ -28,6 +30,7 @@ def create_game(data):
     new_game = Game(room_id=generate_room_id())
     db.session.add(new_game)
     db.session.commit()
+    db.session.remove()
     emit('game created', {'id': new_game.id})
     join_game({'username': data['username'], 'room': new_game.room_id})
 
@@ -42,7 +45,12 @@ def join_game(data):
     player = Player(name=username, game=game)
     db.session.add(player)
     db.session.commit()
+    db.session.remove()
     send(f'{username} has entered the room.', room=room)
+
+@socketio.on_error()        # Handles the default namespace
+def error_handler(e):
+    raise e
 
 class Player(db.Model):
     id = db.Column(db.Integer, primary_key=True)
