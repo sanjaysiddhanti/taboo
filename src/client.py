@@ -2,7 +2,7 @@ import socketio
 
 sio = socketio.Client()
 
-sio.connect('http://localhost:5000')
+sio.connect('http://flask:5000')
 
 @sio.event
 def message(data):

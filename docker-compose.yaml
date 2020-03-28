@@ -8,8 +8,19 @@ services:
       - app
     environment:
       - FLASK_APP=src/app.py
+      - FLASK_ENV=development
+    volumes:
+      - src:/app/src/
     command:
       python src/app.py
+  client:
+    image: taboo:latest
+    networks:
+      - app
+    volumes:
+      - ./src/client.py:/app/src/client.py
+    command:
+      bash -c 'sleep 10 && python src/client.py'
   postgres:
     image: postgres:12.2
     networks:
@@ -21,3 +32,5 @@ services:
 networks:
   app:
     driver: bridge
+volumes:
+  src:

@@ -6,5 +6,7 @@ flask
 flask-socketio
 flask-sqlalchemy
 pytest
+python-socketio
 psycopg2
+requests
 sqlalchemy
