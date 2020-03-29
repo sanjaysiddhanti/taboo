@@ -13,7 +13,7 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://postgres:postgres@postgres
 socketio = SocketIO(app)
 
 db = SQLAlchemy(app)
-
+db.create_all()
 
 @socketio.on('connect')
 def test_connect():

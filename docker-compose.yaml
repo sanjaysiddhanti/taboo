@@ -1,4 +1,4 @@
-version: "2"
+version: "3.7"
 services:
   flask:
     image: taboo:latest
@@ -10,17 +10,25 @@ services:
       - FLASK_APP=src/app.py
       - FLASK_ENV=development
     volumes:
-      - src:/app/src/
-    command:
-      python src/app.py
+      - ./src/:/app/src/
+    entrypoint:
+      - /app/src/wait-for-it.sh
+      - postgres:5432
+      - --
+      - python
+      - /app/src/app.py
   client:
     image: taboo:latest
     networks:
       - app
     volumes:
-      - ./src/client.py:/app/src/client.py
-    command:
-      bash -c 'sleep 10 && python src/client.py'
+      - ./src/:/app/src/
+    entrypoint:
+      - /app/src/wait-for-it.sh
+      - flask:5000
+      - --
+      - python
+      - /app/src/client.py
   postgres:
     image: postgres:12.2
     networks:
@@ -32,5 +40,3 @@ services:
 networks:
   app:
     driver: bridge
-volumes:
-  src:
