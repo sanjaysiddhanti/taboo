@@ -17,18 +17,6 @@ services:
       - --
       - python
       - /app/src/app.py
-  client:
-    image: taboo:latest
-    networks:
-      - app
-    volumes:
-      - ./src/:/app/src/
-    entrypoint:
-      - /app/src/wait-for-it.sh
-      - flask:5000
-      - --
-      - python
-      - /app/src/client.py
   postgres:
     image: postgres:12.2
     networks:

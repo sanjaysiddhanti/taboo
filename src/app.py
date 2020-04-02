@@ -13,7 +13,6 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://postgres:postgres@postgres
 socketio = SocketIO(app)
 
 db = SQLAlchemy(app)
-db.create_all()
 
 @socketio.on('connect')
 def test_connect():
@@ -26,13 +25,15 @@ def hello_world():
 
 @socketio.on('create game')
 def create_game(data):
-    print("In create game endpt")
+    app.logger.info("Creating game")
     new_game = Game(room_id=generate_room_id())
+    app.logger.info(f"Room ID: {new_game.room_id}")
     db.session.add(new_game)
     db.session.commit()
-    db.session.remove()
     emit('game created', {'id': new_game.id})
     join_game({'username': data['username'], 'room': new_game.room_id})
+    db.session.remove()
+
 
 @socketio.on('join game')
 def join_game(data):
