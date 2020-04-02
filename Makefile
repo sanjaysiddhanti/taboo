@@ -14,4 +14,4 @@ run: build
 	docker-compose up
 
 run-client: build
-	docker run --rm --net=taboo_app -v $(PWD)/src/:/app/src/ taboo:latest python /app/src/client.py
+	docker run --rm --net=taboo_app -v $(PWD)/src/:/app/src/ taboo:latest jupyter notebook

@@ -39,6 +39,8 @@ def join_game(data):
     room = data['room']
     assert Game.query.filter(Game.room_id==room).count() == 1, 'Game does not exist'
     game = Game.query.filter(Game.room_id==room).first()
+    assert game.in_progress == False, 'Game is in progress, too late to join'
+    assert game.completed == False, 'Game is already over'
     assert Player.query.filter(Player.game==game, Player.name==username).count() == 0, f'Player {username} is already in room {room}'
     join_room(room)
     player = Player(name=username, game=game)
@@ -46,6 +48,34 @@ def join_game(data):
     db.session.commit()
     db.session.remove()
     send(f'{username} has entered the room.', room=room)
+
+@socketio.on('start game')
+def start_game(data):
+    username = data['username']
+    room = data['room']
+    assert Game.query.filter(Game.room_id==room).count() == 1, 'Game does not exist'
+    game = Game.query.filter(Game.room_id==room).first()
+    assert game.in_progress == False, 'Game is already in progress'
+    assert game.completed == False, 'Game is already over'
+    assert Player.query.filter(Player.game==game, Player.name==username).count() == 1, f'Player {username} is is not in the game {game.room_id}. Cannot start it.'
+    game.in_progress = True
+    db.session.commit()
+    send(f'Game {game.room_id} has started.', room=room)
+    db.session.remove()
+
+
+@socketio.on('end game')
+def start_game(data):
+    room = data['room']
+    assert Game.query.filter(Game.room_id==room).count() == 1, 'Game does not exist'
+    game = Game.query.filter(Game.room_id==room).first()
+    assert game.in_progress == True, "Game is not in progress; can't end it"
+    assert game.completed == False, 'Game is already over'
+    game.in_progress = False
+    game.completed = True
+    db.session.commit()
+    send(f'Game {game.room_id} has finished.', room=room)
+    db.session.remove()
 
 @socketio.on_error()        # Handles the default namespace
 def error_handler(e):
@@ -64,6 +94,8 @@ class Player(db.Model):
 class Game(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     room_id = db.Column(db.String(4), unique=True)
+    in_progress = db.Column(db.Boolean, nullable=False, default=False)
+    completed = db.Column(db.Boolean, nullable=False, default=False)
 
     def __repr__(self):
         return f"<Game {self.id}>"

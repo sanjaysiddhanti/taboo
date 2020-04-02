@@ -5,6 +5,7 @@ flake8
 flask
 flask-socketio
 flask-sqlalchemy
+jupyter
 pytest
 python-socketio
 psycopg2
