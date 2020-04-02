@@ -6,7 +6,7 @@ sio.connect('http://flask:5000')
 
 @sio.event
 def message(data):
-    print('I received a message!')
+    print(f'I received a message! {data}')
 
 @sio.on('hello world')
 def starting(data):

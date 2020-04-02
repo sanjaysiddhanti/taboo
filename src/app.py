@@ -27,13 +27,11 @@ def hello_world():
 def create_game(data):
     app.logger.info("Creating game")
     new_game = Game(room_id=generate_room_id())
-    app.logger.info(f"Room ID: {new_game.room_id}")
     db.session.add(new_game)
     db.session.commit()
     emit('game created', {'id': new_game.id})
     join_game({'username': data['username'], 'room': new_game.room_id})
     db.session.remove()
-
 
 @socketio.on('join game')
 def join_game(data):
@@ -41,7 +39,7 @@ def join_game(data):
     room = data['room']
     assert Game.query.filter(Game.room_id==room).count() == 1, 'Game does not exist'
     game = Game.query.filter(Game.room_id==room).first()
-    assert Player.query.filter(Player.game==game, Player.name==username) == 0, f'Player {username} is already in room {room}'
+    assert Player.query.filter(Player.game==game, Player.name==username).count() == 0, f'Player {username} is already in room {room}'
     join_room(room)
     player = Player(name=username, game=game)
     db.session.add(player)
@@ -75,7 +73,7 @@ def generate_room_id():
     while True:
         room_id = "".join(random.choice(string.ascii_uppercase) for k in range(4))
         # Make sure another game doesn't have this room ID
-        if not Game.query.filter(room_id==room_id).first():
+        if not Game.query.filter_by(room_id=room_id).first():
             return room_id
 
 if __name__ == '__main__':
