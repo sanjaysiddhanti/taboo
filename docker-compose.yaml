@@ -15,8 +15,12 @@ services:
       - /app/src/wait-for-it.sh
       - postgres:5432
       - --
-      - python
-      - /app/src/app.py
+      - flask
+      - run
+      - --host
+      - "0.0.0.0"
+      - --port
+      - "5000"
   postgres:
     image: postgres:12.2
     networks:
