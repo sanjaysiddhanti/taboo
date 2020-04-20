@@ -21,6 +21,17 @@ services:
       - "0.0.0.0"
       - --port
       - "5000"
+  # react:
+  #   image: taboo:latest
+  #   ports:
+  #     - "3000:3000"
+  #   networks:
+  #     - app
+  #   volumes:
+  #     - ./src/:/app/src/
+  #   entrypoint:
+  #     - npm
+  #     - start
   postgres:
     image: postgres:12.2
     networks:
