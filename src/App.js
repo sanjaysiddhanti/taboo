@@ -5,7 +5,18 @@ import InputGroup from "react-bootstrap/InputGroup";
 import FormControl from "react-bootstrap/FormControl";
 import Button from "react-bootstrap/Button";
 
-class App extends React.Component {
+import { BrowserRouter as Router, Route } from "react-router-dom";
+
+export default function App() {
+  return (
+    <Router>
+      <Route exact path="/" component={Home} />
+      <Route exact path="/game/:gameName" component={Game} />
+    </Router>
+  );
+}
+
+class Home extends React.Component {
   constructor(props) {
     super(props);
     this.gameNameInput = React.createRef();
@@ -47,4 +58,13 @@ class App extends React.Component {
   }
 }
 
-export default App;
+class Game extends React.Component {
+  constructor(props) {
+    super(props);
+    this.gameName = props.match.params.gameName;
+  }
+
+  render() {
+    return <h1>{this.gameName}</h1>;
+  }
+}
