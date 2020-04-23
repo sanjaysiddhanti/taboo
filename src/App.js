@@ -5,7 +5,7 @@ import InputGroup from "react-bootstrap/InputGroup";
 import FormControl from "react-bootstrap/FormControl";
 import Button from "react-bootstrap/Button";
 
-import { BrowserRouter as Router, Route } from "react-router-dom";
+import { BrowserRouter as Router, Route, Redirect } from "react-router-dom";
 
 export default function App() {
   return (
@@ -20,6 +20,7 @@ class Home extends React.Component {
   constructor(props) {
     super(props);
     this.gameNameInput = React.createRef();
+    this.state = {};
   }
 
   onCreateGame = () => {
@@ -29,13 +30,19 @@ class Home extends React.Component {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ game_name: this.gameNameInput.current.value }),
-    }).then((response) => response.json());
-    return response;
+    }).then(response => response.json()).then(data => 
+      this.setState({
+        shouldRedirect: true,
+        name: data.name,
+      }))
   };
 
   render() {
     const contents = (
       <div>
+        {this.state.shouldRedirect && (
+          <Redirect to={`/game/${this.state.name}`} />
+        )}
         <h1>Taboo</h1>
         <div>
           Play Taboo online across multiple devices on a shared board. To create
