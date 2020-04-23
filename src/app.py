@@ -3,7 +3,7 @@ import logging
 import random
 import string
 
-from flask import Flask, request
+from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.dialects.postgresql import JSONB
 
@@ -13,9 +13,6 @@ app.logger.setLevel(logging.INFO)
 app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://postgres:postgres@postgres:5432"
 
 db = SQLAlchemy(app)
-
-class NameAlreadyTaken(Exception):
-   pass
 
 class Game(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -31,6 +28,21 @@ class Prompt(db.Model):
   
     def to_json(self):
         return json.dumps({'id': self.id, 'target_word': self.target_word, 'banned_words': self.banned_words})
+
+class NameAlreadyTaken(Exception):
+    status_code = 500
+
+    def __init__(self, message, status_code=None, payload=None):
+        Exception.__init__(self)
+        self.message = message
+        if status_code is not None:
+            self.status_code = status_code
+        self.payload = payload
+
+    def to_dict(self):
+        rv = dict(self.payload or ())
+        rv['message'] = self.message
+        return rv
 
 def generate_game_name():
     while True:
@@ -58,3 +70,9 @@ def get_game(game_name: str):
     game = Game.query.filter_by(name=game_name).first()
     if game:
         return game.to_json()
+
+@app.errorhandler(NameAlreadyTaken)
+def handle_invalid_usage(error):
+    response = jsonify(error.to_dict())
+    response.status_code = error.status_code
+    return response

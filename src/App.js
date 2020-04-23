@@ -20,7 +20,9 @@ class Home extends React.Component {
   constructor(props) {
     super(props);
     this.gameNameInput = React.createRef();
-    this.state = {};
+    this.state = {
+      errorMsg: "",
+    };
   }
 
   onCreateGame = () => {
@@ -30,12 +32,33 @@ class Home extends React.Component {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ game_name: this.gameNameInput.current.value }),
-    }).then(response => response.json()).then(data => 
-      this.setState({
-        shouldRedirect: true,
-        name: data.name,
-      }))
+    })
+      .then((response) => {
+        if (!response.ok) {
+          // response.json().then((data) => {
+          //   throw Error(data.message);
+          // });
+          throw response;
+        }
+        return response.json();
+      })
+      .then((data) =>
+        this.setState({
+          shouldRedirect: true,
+          name: data.name,
+        })
+      )
+      .catch((response) => {
+        const errorMsg = response.json().then((data) => {
+          console.log(data);
+          this.setState((state, _) => ({
+            errorMsg: state.errorMsg.concat(data.message),
+          }));
+        });
+      });
   };
+
+  renderErrorMsg = () => <h3>Error creating game: {this.state.errorMsg}</h3>;
 
   render() {
     const contents = (
@@ -59,6 +82,7 @@ class Home extends React.Component {
             </InputGroup.Append>
           </InputGroup>
         </div>
+        {this.state.errorMsg && this.renderErrorMsg()}
       </div>
     );
     return contents;
