@@ -2,7 +2,7 @@ build: .
 	docker build -t taboo:latest .
 
 shell: build
-	docker run -v $(PWD):/app --rm -it --link postgres:postgres taboo:latest /bin/bash
+	docker run -v $(PWD):/app --rm -it --net taboo_app taboo:latest /bin/bash
 
 lint: build
 	docker run --rm taboo:latest black --check --diff /app
