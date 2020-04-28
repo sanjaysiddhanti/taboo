@@ -93,9 +93,45 @@ class Game extends React.Component {
   constructor(props) {
     super(props);
     this.gameName = props.match.params.gameName;
+    this.state = { errorMsg: "" };
   }
 
+  componentDidMount() {
+    const response = fetch(`/game/${this.gameName}/prompts`, {
+      method: "GET",
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw response;
+        }
+        return response.json();
+      })
+      .then((data) =>
+        this.setState({
+          prompts: data,
+        })
+      )
+      .catch((response) => {
+        const errorMsg = response.json().then((data) => {
+          this.setState((state, _) => ({
+            errorMsg: state.errorMsg.concat(data.message),
+          }));
+        });
+      });
+  }
+
+  renderErrorMsg = () => <h3>Error loading game: {this.state.errorMsg}</h3>;
+
   render() {
-    return <h1>{this.gameName}</h1>;
+    const contents = (
+      <div>
+        <h1>{this.gameName}</h1> 
+        {this.state.prompts && this.state.prompts.map((prompt, _) => {
+          return <div>{prompt.game_id}</div>
+        })}
+        {this.state.errorMsg && this.renderErrorMsg()}
+      </div>
+    );
+    return contents;
   }
 }
