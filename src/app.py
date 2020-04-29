@@ -35,7 +35,6 @@ class Prompt(db.Model):
             "target_word": self.target_word,
             "banned_words": self.banned_words,
         }
-        
 
 
 class GamePrompt(db.Model):
@@ -54,6 +53,7 @@ class GamePrompt(db.Model):
             "game_id": self.game_id,
             "used": self.used,
         }
+
 
 class NameAlreadyTaken(Exception):
     status_code = 500
@@ -113,12 +113,17 @@ def get_game_prompts(game_name: str):
     game = Game.query.filter_by(name=game_name).first()
     if game:
         prompts = (
-            db.session.query(GamePrompt)
+            db.session.query(GamePrompt, Prompt)
             .join(GamePrompt.game, GamePrompt.prompt)
             .filter(Game.name == game_name, GamePrompt.used == False)
             .paginate()
         )
-        return jsonify([game_prompt.to_dict() for game_prompt in prompts.items])
+        response = [
+            (game_prompt.to_dict(), prompt.to_dict())
+            for (game_prompt, prompt) in prompts.items
+        ]
+        response = [dict(prompt, **game_prompt) for game_prompt, prompt in response]
+        return jsonify(response)
 
 
 @app.errorhandler(NameAlreadyTaken)
