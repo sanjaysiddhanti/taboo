@@ -125,10 +125,16 @@ class Game extends React.Component {
   render() {
     const contents = (
       <div>
-        <h1>{this.gameName}</h1> 
-        {this.state.prompts && this.state.prompts.map((prompt, _) => {
-          return <div>{prompt.game_id}</div>
-        })}
+        <h1>{this.gameName}</h1>
+        {this.state.prompts &&
+          this.state.prompts.map((prompt, _) => {
+            return (
+              <div>
+                <div>Clue: {prompt.target_word}</div>
+                <div>Cannot say: {prompt.banned_words.join(' ')}</div>
+              </div>
+            );
+          })}
         {this.state.errorMsg && this.renderErrorMsg()}
       </div>
     );
