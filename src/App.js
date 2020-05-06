@@ -93,7 +93,7 @@ class Game extends React.Component {
   constructor(props) {
     super(props);
     this.gameName = props.match.params.gameName;
-    this.state = { errorMsg: "" };
+    this.state = { errorMsg: "", currentPromptIndex: 0 };
   }
 
   componentDidMount() {
@@ -123,21 +123,19 @@ class Game extends React.Component {
   renderErrorMsg = () => <h3>Error loading game: {this.state.errorMsg}</h3>;
 
   render() {
-    const contents = (
-      <div>
-        <h1>{this.gameName}</h1>
-        {this.state.prompts &&
-          this.state.prompts.map((prompt, _) => {
-            return (
-              <div>
-                <div>Clue: {prompt.target_word}</div>
-                <div>Cannot say: {prompt.banned_words.join(' ')}</div>
-              </div>
-            );
-          })}
-        {this.state.errorMsg && this.renderErrorMsg()}
-      </div>
-    );
-    return contents;
+    if (this.state.prompts) {
+      const currentPrompt = this.state.prompts[this.state.currentPromptIndex];
+      return (
+        <div>
+          <h1>{this.gameName}</h1>
+          <div>
+            <div>Clue: {currentPrompt.target_word}</div>
+            <div>Cannot say: {currentPrompt.banned_words.join(" ")}</div>
+          </div>
+          {this.state.errorMsg && this.renderErrorMsg()}
+        </div>
+      );
+    }
+  return null;
   }
 }
