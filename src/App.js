@@ -97,7 +97,7 @@ class Game extends React.Component {
   }
 
   componentDidMount() {
-    this.fetchPrompts(1)
+    this.fetchPrompts(1);
   }
 
   fetchPrompts = (page) => {
@@ -115,7 +115,7 @@ class Game extends React.Component {
           prompts: data.prompts,
           page: data.page,
           numPages: data.num_pages,
-          currentPromptIndex: 0
+          currentPromptIndex: 0,
         })
       )
       .catch((response) => {
@@ -125,9 +125,40 @@ class Game extends React.Component {
           }));
         });
       });
-  }
+  };
 
   renderErrorMsg = () => <h3>Error loading game: {this.state.errorMsg}</h3>;
+
+  morePromptsExist = () =>
+    this.state.currentPromptIndex < this.state.prompts.length - 1 ||
+    this.state.page < this.state.numPages;
+
+  nextPrompt = () => {
+    const response = fetch("/game_prompt/update", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        game_prompt_id: this.state.prompts[this.state.currentPromptIndex].id,
+      }),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw response;
+        }
+        return;
+      })
+      .then(this.fetchPrompts(1))
+      .catch((response) => {
+        const errorMsg = response.json().then((data) => {
+          console.log(data);
+          this.setState((state, _) => ({
+            errorMsg: state.errorMsg.concat(data.message),
+          }));
+        });
+      });
+  };
 
   render() {
     if (this.state.prompts) {
@@ -139,10 +170,15 @@ class Game extends React.Component {
             <div>Clue: {currentPrompt.target_word}</div>
             <div>Cannot say: {currentPrompt.banned_words.join(" ")}</div>
           </div>
+          {this.morePromptsExist() && (
+            <Button variant="success" onClick={this.nextPrompt}>
+              Next Prompt
+            </Button>
+          )}
           {this.state.errorMsg && this.renderErrorMsg()}
         </div>
       );
     }
-  return null;
+    return null;
   }
 }

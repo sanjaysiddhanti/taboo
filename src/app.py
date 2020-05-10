@@ -71,6 +71,22 @@ class NameAlreadyTaken(Exception):
         return rv
 
 
+class EntityNotFound(Exception):
+    status_code = 404
+
+    def __init__(self, message, status_code=None, payload=None):
+        Exception.__init__(self)
+        self.message = message
+        if status_code is not None:
+            self.status_code = status_code
+        self.payload = payload
+
+    def to_dict(self):
+        rv = dict(self.payload or ())
+        rv["message"] = self.message
+        return rv
+
+
 def generate_game_name():
     while True:
         game_name = "".join(random.choice(string.ascii_uppercase) for k in range(4))
@@ -133,8 +149,27 @@ def get_game_prompts(game_name: str):
         return jsonify(response)
 
 
+@app.route("/game_prompt/update", methods=["PUT"])
+def update_game_prompt():
+    game_prompt_id = request.json.get("game_prompt_id")
+    game_prompt = GamePrompt.query.get(game_prompt_id)
+    if not game_prompt:
+        raise EntityNotFound(f"Could not find a GamePrompt with id {game_prompt_id}")
+    game_prompt.used = True
+    db.session.add(game_prompt)
+    db.session.commit()
+    return jsonify(), 204
+
+
 @app.errorhandler(NameAlreadyTaken)
-def handle_invalid_usage(error):
+def handle_name_already_exists(error):
+    response = jsonify(error.to_dict())
+    response.status_code = error.status_code
+    return response
+
+
+@app.errorhandler(EntityNotFound)
+def handle_entity_not_found(error):
     response = jsonify(error.to_dict())
     response.status_code = error.status_code
     return response
