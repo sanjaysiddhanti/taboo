@@ -111,18 +111,25 @@ def get_game_prompts(game_name: str):
     """Get the unused prompts for a game
     """
     game = Game.query.filter_by(name=game_name).first()
+    page = int(request.args.get("page", 1))
     if game:
         prompts = (
             db.session.query(GamePrompt, Prompt)
             .join(GamePrompt.game, GamePrompt.prompt)
             .filter(Game.name == game_name, GamePrompt.used == False)
-            .paginate()
+            .paginate(page=page)
         )
         response = [
             (game_prompt.to_dict(), prompt.to_dict())
             for (game_prompt, prompt) in prompts.items
         ]
-        response = [dict(prompt, **game_prompt) for game_prompt, prompt in response]
+        response = {
+            "prompts": [
+                dict(prompt, **game_prompt) for game_prompt, prompt in response
+            ],
+            "page": page,
+            "num_pages": prompts.pages,
+        }
         return jsonify(response)
 
 

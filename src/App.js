@@ -93,11 +93,15 @@ class Game extends React.Component {
   constructor(props) {
     super(props);
     this.gameName = props.match.params.gameName;
-    this.state = { errorMsg: "", currentPromptIndex: 0 };
+    this.state = { errorMsg: "" };
   }
 
   componentDidMount() {
-    const response = fetch(`/game/${this.gameName}/prompts`, {
+    this.fetchPrompts(1)
+  }
+
+  fetchPrompts = (page) => {
+    const response = fetch(`/game/${this.gameName}/prompts?page=${page}`, {
       method: "GET",
     })
       .then((response) => {
@@ -108,7 +112,10 @@ class Game extends React.Component {
       })
       .then((data) =>
         this.setState({
-          prompts: data,
+          prompts: data.prompts,
+          page: data.page,
+          numPages: data.num_pages,
+          currentPromptIndex: 0
         })
       )
       .catch((response) => {
