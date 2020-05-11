@@ -163,12 +163,16 @@ class Game extends React.Component {
   render() {
     if (this.state.prompts) {
       const currentPrompt = this.state.prompts[this.state.currentPromptIndex];
+      const listItems = currentPrompt.banned_words.map((word) => (
+        <li key={word}>{word}</li>
+      ));
+
       return (
-        <div>
+        <div className="col">
           <h1>{this.gameName}</h1>
-          <div>
-            <div>Clue: {currentPrompt.target_word}</div>
-            <div>Cannot say: {currentPrompt.banned_words.join(" ")}</div>
+          <div classsName="card">
+            <h3 className="clue">{currentPrompt.target_word}</h3>
+            <ul className="taboo-words">{listItems}</ul>
           </div>
           {this.morePromptsExist() && (
             <Button variant="success" onClick={this.nextPrompt}>
