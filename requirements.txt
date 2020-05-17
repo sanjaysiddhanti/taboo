@@ -9,3 +9,4 @@ pytest
 psycopg2
 requests
 sqlalchemy
+zappa

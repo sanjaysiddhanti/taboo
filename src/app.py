@@ -3,6 +3,8 @@ import logging
 import random
 import string
 
+import settings
+
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.dialects.postgresql import JSONB
@@ -11,7 +13,7 @@ from sqlalchemy.orm import relationship
 app = Flask(__name__)
 app.logger.setLevel(logging.INFO)
 
-app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://postgres:postgres@postgres:5432"
+app.config["SQLALCHEMY_DATABASE_URI"] = settings.DATABASE_URI
 
 db = SQLAlchemy(app)
 
@@ -85,6 +87,11 @@ class EntityNotFound(Exception):
         rv = dict(self.payload or ())
         rv["message"] = self.message
         return rv
+
+
+@app.route("/", methods=["GET"])
+def ping():
+    return "pong", 200
 
 
 def generate_game_name():
@@ -173,3 +180,6 @@ def handle_entity_not_found(error):
     response = jsonify(error.to_dict())
     response.status_code = error.status_code
     return response
+
+if __name__ == '__main__':
+    app.run()
