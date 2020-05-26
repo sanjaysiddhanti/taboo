@@ -1,5 +1,6 @@
 import json
 import logging
+import os
 import random
 import string
 
@@ -13,7 +14,7 @@ from sqlalchemy.orm import relationship
 app = Flask(__name__)
 app.logger.setLevel(logging.INFO)
 
-app.config["SQLALCHEMY_DATABASE_URI"] = settings.DATABASE_URI
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URI")
 
 db = SQLAlchemy(app)
 
