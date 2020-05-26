@@ -6,7 +6,7 @@ flask
 flask-sqlalchemy
 jupyter
 pytest
-psycopg2
+psycopg2-binary
 requests
 sqlalchemy
 zappa
