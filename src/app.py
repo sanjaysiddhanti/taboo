@@ -4,7 +4,7 @@ import os
 import random
 import string
 
-import settings
+from src import settings
 
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
