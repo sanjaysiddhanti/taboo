@@ -1,0 +1,15 @@
+{
+    "dev": {
+        "app_function": "src.app.app",
+        "profile_name": null,
+        "project_name": "taboo",
+        "runtime": "python3.7",
+        "s3_bucket": "taboo-sanjay",
+        "aws_region": "us-east-2",
+        "exclude": ["node_modules", "package*.json"],
+        "vpc_config" : {
+            "SubnetIds": [ "subnet-55c6f42f" ], 
+            "SecurityGroupIds": [ "sg-3e391946" ]
+        }
+    }
+}
