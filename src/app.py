@@ -182,5 +182,6 @@ def handle_entity_not_found(error):
     response.status_code = error.status_code
     return response
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     app.run()
