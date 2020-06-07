@@ -3,6 +3,7 @@ ipdb
 ipython
 flake8
 flask
+flask-cors
 flask-sqlalchemy
 jupyter
 pytest

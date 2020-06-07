@@ -7,11 +7,14 @@ import string
 from src import settings
 
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import relationship
 
 app = Flask(__name__)
+CORS(app)
+
 app.logger.setLevel(logging.INFO)
 
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URI")
