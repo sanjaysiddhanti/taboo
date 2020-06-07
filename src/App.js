@@ -26,7 +26,7 @@ class Home extends React.Component {
   }
 
   onCreateGame = () => {
-    const response = fetch("/game", {
+    const response = fetch(`${process.env.REACT_APP_SERVER_URL}/game`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -101,7 +101,7 @@ class Game extends React.Component {
   }
 
   fetchPrompts = (page) => {
-    const response = fetch(`/game/${this.gameName}/prompts?page=${page}`, {
+    const response = fetch(`${process.env.REACT_APP_SERVER_URL}/game/${this.gameName}/prompts?page=${page}`, {
       method: "GET",
     })
       .then((response) => {
@@ -134,7 +134,7 @@ class Game extends React.Component {
     this.state.page < this.state.numPages;
 
   nextPrompt = () => {
-    const response = fetch("/game_prompt/update", {
+    const response = fetch(`${process.env.REACT_APP_SERVER_URL}/game_prompt/update`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",

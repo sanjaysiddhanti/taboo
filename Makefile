@@ -12,3 +12,6 @@ format: build
 
 run: build
 	docker-compose up
+
+build-static-assets: build
+	docker run --rm -v $(PWD):/app taboo:latest npm run build
