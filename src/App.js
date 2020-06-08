@@ -16,6 +16,10 @@ export default function App() {
   );
 }
 
+function getFetchUrl(path) {
+  return process.env.REACT_APP_SERVER_URL === undefined ? path : `${process.env.REACT_APP_SERVER_URL}${path}`
+}
+
 class Home extends React.Component {
   constructor(props) {
     super(props);
@@ -26,7 +30,7 @@ class Home extends React.Component {
   }
 
   onCreateGame = () => {
-    const response = fetch(`${process.env.REACT_APP_SERVER_URL}/game`, {
+    const response = fetch(getFetchUrl("/game"), {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -101,7 +105,7 @@ class Game extends React.Component {
   }
 
   fetchPrompts = (page) => {
-    const response = fetch(`${process.env.REACT_APP_SERVER_URL}/game/${this.gameName}/prompts?page=${page}`, {
+    const response = fetch(getFetchUrl(`/game/${this.gameName}/prompts?page=${page}`), {
       method: "GET",
     })
       .then((response) => {
@@ -134,7 +138,7 @@ class Game extends React.Component {
     this.state.page < this.state.numPages;
 
   nextPrompt = () => {
-    const response = fetch(`${process.env.REACT_APP_SERVER_URL}/game_prompt/update`, {
+    const response = fetch(getFetchUrl("/game_prompt/update"), {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",

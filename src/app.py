@@ -17,7 +17,7 @@ CORS(app)
 
 app.logger.setLevel(logging.INFO)
 
-app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URI")
+app.config["SQLALCHEMY_DATABASE_URI"] = settings.DATABASE_URI
 
 db = SQLAlchemy(app)
 
