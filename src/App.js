@@ -153,7 +153,7 @@ class Game extends React.Component {
         }
         return;
       })
-      .then(this.fetchPrompts(1))
+      .then(() => this.fetchPrompts(1))
       .catch((response) => {
         const errorMsg = response.json().then((data) => {
           console.log(data);
