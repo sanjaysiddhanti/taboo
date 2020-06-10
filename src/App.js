@@ -4,6 +4,12 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import InputGroup from "react-bootstrap/InputGroup";
 import FormControl from "react-bootstrap/FormControl";
 import Button from "react-bootstrap/Button";
+import Card from "react-bootstrap/Card";
+import ListGroup from "react-bootstrap/ListGroup";
+import ListGroupItem from "react-bootstrap/ListGroupItem";
+import Container from "react-bootstrap/Container";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
 
 import { BrowserRouter as Router, Route, Redirect } from "react-router-dom";
 
@@ -70,22 +76,34 @@ class Home extends React.Component {
         {this.state.shouldRedirect && (
           <Redirect to={`/game/${this.state.name}`} />
         )}
-        <h1>Taboo</h1>
-        <div>
-          Play Taboo online across multiple devices on a shared board. To create
-          a new game or join an existing game, enter a game identifier and click
-          'GO'.{" "}
-          <InputGroup className="mb-3">
-            <FormControl
-              placeholder="Name of game"
-              aria-label="Name of game"
-              ref={this.gameNameInput}
-            />
-            <InputGroup.Append>
-              <Button onClick={this.onCreateGame}>Go</Button>
-            </InputGroup.Append>
-          </InputGroup>
-        </div>
+        <Container>
+          <Row>
+            <Col md={{ span: 6, offset: 3 }}>
+              <h1>Desi Taboo</h1>
+            </Col>
+          </Row>
+          <Row>
+            <Col md={{ span: 6, offset: 3 }}>
+              To create a new game or join an existing game, enter a game identifier and click
+              Go.{" "}
+            </Col>
+          </Row>
+          <Row>
+            <Col md={{ span: 6, offset: 3 }}>          
+              <InputGroup className="mb-3">
+                <FormControl
+                  placeholder="Name of game"
+                  aria-label="Name of game"
+                  ref={this.gameNameInput}
+                  size="md"
+                />
+                <InputGroup.Append>
+                  <Button onClick={this.onCreateGame}>Go</Button>
+                </InputGroup.Append>
+              </InputGroup>  
+            </Col>
+          </Row>
+        </Container>
         {this.state.errorMsg && this.renderErrorMsg()}
       </div>
     );
@@ -168,23 +186,34 @@ class Game extends React.Component {
     if (this.state.prompts) {
       const currentPrompt = this.state.prompts[this.state.currentPromptIndex];
       const listItems = currentPrompt.banned_words.map((word) => (
-        <li key={word}>{word}</li>
+        <ListGroupItem key={word}>{word}</ListGroupItem>
       ));
 
       return (
-        <div className="col">
-          <h1>{this.gameName}</h1>
-          <div classsName="card">
-            <h3 className="clue">{currentPrompt.target_word}</h3>
-            <ul className="taboo-words">{listItems}</ul>
-          </div>
-          {this.morePromptsExist() && (
-            <Button variant="success" onClick={this.nextPrompt}>
-              Next Prompt
-            </Button>
-          )}
-          {this.state.errorMsg && this.renderErrorMsg()}
-        </div>
+        <Container>
+          <Row>
+            <Col md={{ span: 6, offset: 3 }}>
+              <h1>Desi Taboo</h1>
+            </Col>
+          </Row>
+          <Row>
+            <Col md={{ span: 6, offset: 3 }}>
+              <Card style={{ width: '18rem' }}>
+                  <Card.Body>
+                    <Card.Title>{currentPrompt.target_word}</Card.Title>
+                    <ListGroup className="list-group-flush">
+                      {listItems}
+                    </ListGroup>
+                  </Card.Body>
+                </Card>
+                {this.morePromptsExist() && (
+                <Button variant="success" onClick={this.nextPrompt}>
+                  Next Prompt
+                </Button>
+              )}
+            </Col>
+          </Row>
+        </Container>
       );
     }
     return null;

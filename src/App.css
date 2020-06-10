@@ -36,33 +36,3 @@
     transform: rotate(360deg);
   }
 }
-
-.card {
-  width: 60%;
-  background-color: #FFFFFF;
-  border-radius: 10px;
-}
-
-.clue {
-  background-color: #657893;
-  color: #FFFFFF;
-  letter-spacing: 1px;
-  border-radius: 10px 10px 0px 0px;
-  margin: 0;
-  padding: .75em;
-}
-
-.taboo-words {
-  list-style-type: none;
-  padding: 0;
-} 
-  .taboo-words li {
-    padding: 10px;
-  }
-
-.col {
-  width: 48%;
-  flex-direction: column;
-  align-items: center;
-  display: flex;
-}
