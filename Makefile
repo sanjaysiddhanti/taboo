@@ -15,3 +15,6 @@ run: build
 
 build-static-assets: build
 	docker run --rm -v $(PWD):/app taboo:latest npm run build
+
+deploy-frontend-to-s3: build build-static-assets
+	aws s3 sync build/ s3://taboo-deploy
